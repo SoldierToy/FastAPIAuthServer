@@ -1,11 +1,11 @@
-from db.connection import async_session_factory
-from models import Users, RefreshWhiteList
-from sqlalchemy import insert, delete, update, select
+from src.db.connection import async_session_factory
+from src.models import Users, RefreshTokens
+from sqlalchemy import insert, select
 
 
 class UsersRepo:
     model_user = Users
-    model_refresh_tokens = RefreshWhiteList
+    model_refresh_tokens = RefreshTokens
 
     async def add_one(self, data: dict):
         async with async_session_factory() as session:

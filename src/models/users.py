@@ -19,11 +19,11 @@ class Users(Base):
     name: Mapped[str] = mapped_column(nullable=False)
     hashed_password: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
-    token: Mapped['RefreshWhiteList'] = relationship(back_populates='user')
-    role: Mapped[int] = mapped_column(Integer, nullable=False)
+    token: Mapped['RefreshTokens'] = relationship(back_populates='user', cascade='delete')
+    role: Mapped[str] = mapped_column(nullable=False)
 
 
-class RefreshWhiteList(Base):
+class RefreshTokens(Base):
     __tablename__ = 'refresh_tokens'
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     db_port: str
     db_pass: str
 
+    superuser_password: str
+    superuser_name: str
+    superuser_email: str
+    superuser_tg_id: int
+
     def get_db_url(self):
         return f"postgresql+asyncpg://{self.db_user}:{self.db_pass}@{self.db_host}/{self.db_name}"
 

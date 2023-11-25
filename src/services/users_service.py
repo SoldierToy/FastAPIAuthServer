@@ -1,25 +1,33 @@
+from enum import Enum
 from typing import Type
 
 import sqlalchemy
 from fastapi import HTTPException
 
-from jwt.generate_jwt import TokenCreator
-from repositories.users_repo import UsersRepo
-from schemas.users_schema import CreateUserSchema, AuthUserSchema
-from utils.hashing import Hasher
+from src.jwt.generate_jwt import TokenCreator
+from src.repositories.users_repo import UsersRepo
+from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema
+from src.utils.hashing import Hasher
 from collections import namedtuple
 
 Tokens = namedtuple('Tokens', ['access_token', 'refresh_token'])
+
+
+class UserRoles(str, Enum):
+    ROLE_USER = "USER"
+    ROLE_ADMIN = "ADMIN"
+    ROLE_SUPERADMIN = "SUPERADMIN"
 
 
 class UsersService:
     def __init__(self, repo: Type[UsersRepo]):
         self.repo: UsersRepo = repo()
 
-    async def add_user(self, user: CreateUserSchema):
+    async def add_user(self, user: CreateUserSchema,  user_role=UserRoles.ROLE_USER):
         """Занесение нового юзера в БД"""
         try:
             user_data = user.model_dump()
+            user_data['role'] = user_role
             user_pass = user_data.pop('password')
             user_data['hashed_password'] = Hasher.hashing_password(user_pass)
             user_id = await self.repo.add_one(user_data)
@@ -71,3 +79,6 @@ class UsersService:
             return Tokens
         else:
             raise HTTPException(status_code=400, detail="Incorrect password or email")
+
+    async def create_super_user(self):
+        ...

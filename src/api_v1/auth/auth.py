@@ -1,8 +1,8 @@
 from collections import namedtuple
 
 from fastapi import APIRouter, Depends, Response
-from schemas.users_schema import CreateUserSchema, RefreshTokenSchema, AuthUserSchema
-from depends.users_service_depends import users_service_depends
+from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema
+from src.depends.users_service_depends import users_service_depends
 
 router = APIRouter(tags=["auth"])
 
