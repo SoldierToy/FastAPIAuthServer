@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     superuser_email: str
     superuser_tg_id: int
 
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
+    refresh_token_expire_days: int
+
     def get_db_url(self):
         return f"postgresql+asyncpg://{self.db_user}:{self.db_pass}@{self.db_host}/{self.db_name}"
 
