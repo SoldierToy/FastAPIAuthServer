@@ -2,7 +2,6 @@ import asyncio
 from asyncio import run
 
 from settings import settings
-from src.depends.users_service_depends import users_service_depends
 from src.repositories.users_repo import UsersRepo
 from src.schemas.users_schemas import CreateUserSchema
 from src.services.users_service import UsersService, UserRoles
@@ -23,8 +22,8 @@ async def create_super_user():
     await UsersService(UsersRepo).add_user(user_date, user_role=UserRoles.ROLE_SUPERADMIN)
 
 
-print()
-print('SUPERADMIN CREATED')
+    print()
+    print('SUPERADMIN CREATED')
 
 
 async def main():
