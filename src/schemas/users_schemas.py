@@ -29,3 +29,7 @@ class UserAuthTokenSchema(BaseModel):
     email: str = Field(default=None)
     role: str = Field(default=None)
     exp: int = Field(default=None)
+
+
+class UserAuthRefreshTokenSchema(UserAuthTokenSchema):
+    token: str
