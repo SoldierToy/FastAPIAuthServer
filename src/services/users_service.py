@@ -1,12 +1,12 @@
 from enum import Enum
-from typing import Type
+from typing import Type, Union
 
 import sqlalchemy
 from fastapi import HTTPException
 
 from src.jwt.generate_jwt import TokenCreator
 from src.repositories.users_repo import UsersRepo
-from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema
+from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema, UpdateUserSchema, UserAuthTokenSchema
 from src.utils.hashing import Hasher
 from collections import namedtuple
 
@@ -67,7 +67,7 @@ class UsersService:
             user_data_to_jwt = {
                 'name': user_data.name,
                 'email': user_data.email,
-                'uuid': str(user_data.id),
+                'id': str(user_data.id),
                 'role': user_data.role
             }
 
@@ -80,5 +80,26 @@ class UsersService:
         else:
             raise HTTPException(status_code=400, detail="Incorrect password or email")
 
-    async def update_user(self):
-        ...
+    @staticmethod
+    def self_editing(id_current_user: str, id_user_edit: str) -> bool:
+        if id_user_edit == id_current_user:
+            return True
+
+    async def check_roles(self, role_current_user, id_user_edit) -> bool:
+        user = await self.repo.get_one_from_id(user_id=id_user_edit)
+        user_edit_role = user.role
+
+        if role_current_user == UserRoles.ROLE_SUPERADMIN and user_edit_role in (
+                UserRoles.ROLE_ADMIN, UserRoles.ROLE_USER):
+            return True
+        elif role_current_user == UserRoles.ROLE_ADMIN and user_edit_role in (UserRoles.ROLE_USER):
+            return True
+
+    async def update_user(self, current_user_data: UserAuthTokenSchema, user_edit_data: UpdateUserSchema):
+        edit_data_dict = user_edit_data.model_dump(exclude_none=True)
+        if UsersService.self_editing(id_current_user=current_user_data.id, id_user_edit=user_edit_data.id):
+            await self.repo.update_user_date(edit_data_dict)
+        elif await self.check_roles(current_user_data.role, user_edit_data.id):
+            await self.repo.update_user_date(edit_data_dict)
+        else:
+            raise HTTPException(status_code=403)
