@@ -23,7 +23,7 @@ class UsersService:
     def __init__(self, repo: Type[UsersRepo]):
         self.repo: UsersRepo = repo()
 
-    async def add_user(self, user: CreateUserSchema,  user_role=UserRoles.ROLE_USER):
+    async def add_user(self, user: CreateUserSchema, user_role=UserRoles.ROLE_USER):
         """Занесение нового юзера в БД"""
         try:
             user_data = user.model_dump()
@@ -52,7 +52,7 @@ class UsersService:
         res = await self.repo.get_one_from_email(user_email)
         return res
 
-    async def authenticated(self, data: AuthUserSchema):
+    async def authenticated_user(self, data: AuthUserSchema):
         user_email = data.email
 
         try:
@@ -80,5 +80,5 @@ class UsersService:
         else:
             raise HTTPException(status_code=400, detail="Incorrect password or email")
 
-    async def create_super_user(self):
+    async def update_user(self):
         ...
