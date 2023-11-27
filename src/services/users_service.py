@@ -98,8 +98,8 @@ class UsersService:
     async def update_user(self, current_user_data: UserAuthTokenSchema, user_edit_data: UpdateUserSchema):
         edit_data_dict = user_edit_data.model_dump(exclude_none=True)
         if UsersService.self_editing(id_current_user=current_user_data.id, id_user_edit=user_edit_data.id):
-            await self.repo.update_user_date(edit_data_dict)
+            await self.repo.update_user_data(edit_data_dict)
         elif await self.check_roles(current_user_data.role, user_edit_data.id):
-            await self.repo.update_user_date(edit_data_dict)
+            await self.repo.update_user_data(edit_data_dict)
         else:
             raise HTTPException(status_code=403)

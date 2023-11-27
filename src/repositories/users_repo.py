@@ -1,6 +1,6 @@
 from src.db.connection import async_session_factory
 from src.models import Users, RefreshTokens
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 
 
 class UsersRepo:
@@ -17,6 +17,12 @@ class UsersRepo:
     async def get_one_from_email(self, email: str):
         async with async_session_factory() as session:
             stmt = select(self.model_user).filter_by(email=email)
+            res = await session.execute(stmt)
+            return res.scalar_one()
+
+    async def get_one_from_id(self, user_id: str):
+        async with async_session_factory() as session:
+            stmt = select(self.model_user).filter_by(id=user_id)
             res = await session.execute(stmt)
             return res.scalar_one()
 
@@ -38,4 +44,9 @@ class UsersRepo:
             await session.execute(stmt)
             await session.commit()
 
-
+    async def update_user_data(self, data: dict):
+        async with async_session_factory() as session:
+            user_id = data.get('id')
+            stmt = update(self.model_user).filter_by(id=user_id).values(**data)
+            await session.execute(stmt)
+            await session.commit()
