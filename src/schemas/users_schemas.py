@@ -14,3 +14,11 @@ class CreateUserSchema(BaseModel):
 class AuthUserSchema(BaseModel):
     email: EmailStr
     password: str
+
+
+class UserAuthTokenSchema(BaseModel):
+    name: str
+    email: str
+    uuid: str
+    role: str
+    exp: int
