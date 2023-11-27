@@ -29,4 +29,4 @@ class RefreshTokens(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     refresh_token: Mapped[str] = mapped_column(unique=True)
     user: Mapped["Users"] = relationship(back_populates='token')
-    user_fk: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
