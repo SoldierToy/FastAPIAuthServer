@@ -31,3 +31,10 @@ class TokenCreator:
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
         return encoded_jwt
+
+    @staticmethod
+    def decode_tokens(token):
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        return payload
