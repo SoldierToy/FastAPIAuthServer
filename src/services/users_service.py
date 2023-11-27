@@ -6,7 +6,8 @@ from fastapi import HTTPException
 
 from src.jwt.generate_jwt import TokenCreator
 from src.repositories.users_repo import UsersRepo
-from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema, UpdateUserSchema, UserAuthTokenSchema
+from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema, UpdateUserSchema, UserAuthTokenSchema, \
+    UserAuthRefreshTokenSchema
 from src.utils.hashing import Hasher
 from collections import namedtuple
 
@@ -103,3 +104,22 @@ class UsersService:
             await self.repo.update_user_data(edit_data_dict)
         else:
             raise HTTPException(status_code=403)
+
+    async def tokens_replacement(self, refresh_token_data: UserAuthRefreshTokenSchema):
+        await self.repo.delete_refresh_token_for_user(refresh_token_data.token)
+
+        user_data = await self.repo.get_one_from_id(refresh_token_data.id)
+
+        user_data_to_jwt = {
+            'name': user_data.name,
+            'email': user_data.email,
+            'id': str(user_data.id),
+            'role': user_data.role
+        }
+
+        Tokens.access_token = TokenCreator.create_access_token(user_data_to_jwt)
+        Tokens.refresh_token = TokenCreator.create_refresh_token(user_data_to_jwt)
+
+        await self.repo.add_refresh_token_for_user(user_data.id, Tokens.refresh_token)
+
+        return Tokens
