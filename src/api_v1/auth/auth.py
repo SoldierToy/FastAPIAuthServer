@@ -3,7 +3,7 @@ from collections import namedtuple
 from fastapi import APIRouter, Depends, Response
 
 from src.depends.users_authorization_depends import check_user_auth
-from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema, UserAuthToken
+from src.schemas.users_schemas import CreateUserSchema, AuthUserSchema, UserAuthTokenSchema
 from src.depends.users_service_depends import users_service_depends
 
 router = APIRouter(tags=["auth"])
@@ -29,6 +29,6 @@ async def update_access_token():
 
 
 @router.post('/private_endpoint')
-async def private(user_token_date: UserAuthToken = Depends(check_user_auth)):
+async def private(user_token_date: UserAuthTokenSchema = Depends(check_user_auth)):
     print(user_token_date.email)
     return {'post': 'private_endpoint'}

@@ -1,7 +1,7 @@
 import jose
 from src.jwt.generate_jwt import TokenCreator
 from fastapi import Header, HTTPException
-from src.schemas.users_schemas import UserAuthToken
+from src.schemas.users_schemas import UserAuthTokenSchema
 
 
 class CheckUserAuth:
@@ -14,7 +14,7 @@ class CheckUserAuth:
         if token is None:
             raise HTTPException(status_code=401, detail='invalid token')
         try:
-            user_token_date = UserAuthToken(**CheckUserAuth.parse_jwt(token))
+            user_token_date = UserAuthTokenSchema(**CheckUserAuth.parse_jwt(token))
         except jose.exceptions.JWTError:
             raise HTTPException(status_code=401, detail='invalid token')
         return user_token_date
